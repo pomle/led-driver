@@ -37,8 +37,6 @@ TBlendType currentBlending;
 extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
-bool playState = false;
-
 void setup() {
   Serial.begin(9600);
 
@@ -68,18 +66,7 @@ void loop() {
     toggleHits = 0;
   }
 
-  static unsigned int playHits = 0;
-  if (digitalRead(PLAY_BUTTON) == HIGH) {
-    playHits++;
-  } else {
-    playHits = 0;
-  }
-
-  if (playHits == 1) {
-    playState = !playState;
-  }
-
-  if (!playState) {
+  if (!PlayRoutine()) {
     FastLED.clear(true);
     delay(1000 / UPDATES_PER_SECOND);
     return;
@@ -99,6 +86,23 @@ void loop() {
   FastLED.show();
 
   FastLED.delay(1000 / UPDATES_PER_SECOND);
+}
+
+bool PlayRoutine() {
+  static bool playState = false;
+  static unsigned int playHits = 0;
+
+  if (digitalRead(PLAY_BUTTON) == HIGH) {
+    playHits++;
+  } else {
+    playHits = 0;
+  }
+
+  if (playHits == 1) {
+    playState = !playState;
+  }
+
+  return playState;
 }
 
 void FillLEDsFromPaletteColors(uint8_t colorIndex) {
