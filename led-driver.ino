@@ -8,6 +8,7 @@
 #define BRIGHTNESS 64
 #define LED_TYPE WS2811
 #define COLOR_ORDER GRB
+#define MAX_BRIGHTNESS 128
 CRGB leds[NUM_LEDS];
 
 #define UPDATES_PER_SECOND 100
@@ -59,8 +60,11 @@ void loop() {
     return;
   }
 
-  int brightness = analogRead(A0);
-  FastLED.setBrightness(max(8, brightness / 4));
+  int brightness = map(
+    analogRead(A0),
+    0, 1000,
+    8, MAX_BRIGHTNESS);
+  FastLED.setBrightness(brightness);
 
   static word moveOffset = 0;
   moveOffset += max(0, analogRead(A1) - 40);  // 0-1023
