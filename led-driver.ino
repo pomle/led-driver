@@ -68,7 +68,7 @@ void loop() {
 
   int speed = map(clamp(analogRead(A1) - 20, 0, 1023), 0, 950, 0, 1023);
   static word moveOffset = 0;
-  moveOffset += speed * direction;
+  moveOffset += speed * 2 * direction;
 
   static uint8_t startIndex = 0;
   startIndex = moveOffset / 256;
