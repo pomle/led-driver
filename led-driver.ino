@@ -183,7 +183,7 @@ CRGBPalette16 SetupTotallyRandomPalette() {
 CRGBPalette16 SetupWhiteFlashPalette() {
   CRGBPalette16 palette;
   fill_solid(palette, 16, CRGB::Black);
-  palette[0] = CRGB::White;
+  palette[15] = CRGB::White;
   return palette;
 }
 
