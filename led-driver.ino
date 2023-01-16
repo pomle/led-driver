@@ -64,9 +64,9 @@ void loop() {
   }
 
   int brightness = map(
-    analogRead(A0),
+    analogRead(A0) - 10,
     0, 1000,
-    8, MAX_BRIGHTNESS);
+    12, MAX_BRIGHTNESS);
   FastLED.setBrightness(brightness);
 
   static uint8_t startIndex = 0;
