@@ -208,10 +208,12 @@ CRGBPalette16 SetupBlackAndWhiteStripedPalette() {
 // sixteen CRGB colors, the various fill_* functions can be used
 // to set them up.
 CRGBPalette16 SetupSwedenPalette() {
-  CRGBPalette16 palette;
-  for (int i = 0; i < 16; i++) {
-    palette[i] = i % 2 == 0 ? CRGB::Yellow : CRGB::Blue;
-  }
+  CRGBPalette16 palette = {
+    CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
+    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
+    CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
+    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
+  };
   return palette;
 }
 
