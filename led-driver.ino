@@ -39,8 +39,6 @@ extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
 void setup() {
-  Serial.begin(9600);
-
   pinMode(PLAY_BUTTON, INPUT);
   pinMode(COLOR_BUTTON, INPUT);
 
@@ -67,8 +65,7 @@ void loop() {
   FastLED.setBrightness(brightness);
 
   static word moveOffset = 0;
-  moveOffset += max(0, analogRead(A1) - 40);  // 0-1023
-  Serial.println(max(0, analogRead(A1) - 40));
+  moveOffset += max(0, analogRead(A1) - 40);
 
   static uint8_t startIndex = 0;
   startIndex = moveOffset / 256;
