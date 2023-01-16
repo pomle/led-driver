@@ -51,20 +51,7 @@ void setup() {
 }
 
 void loop() {
-  static unsigned int toggleHits = 0;
-  if (digitalRead(COLOR_BUTTON) == HIGH) {
-    toggleHits++;
-    if (toggleHits == 50) {
-      ToggleBlending();
-    }
-  } else {
-    if (toggleHits > 0) {
-      if (toggleHits < 50) {
-        TogglePalette();
-      }
-    }
-    toggleHits = 0;
-  }
+  ToggleRoutine();
 
   if (!PlayRoutine()) {
     FastLED.clear(true);
@@ -86,6 +73,23 @@ void loop() {
   FastLED.show();
 
   FastLED.delay(1000 / UPDATES_PER_SECOND);
+}
+
+void ToggleRoutine() {
+  static unsigned int toggleHits = 0;
+  if (digitalRead(COLOR_BUTTON) == HIGH) {
+    toggleHits++;
+    if (toggleHits == 50) {
+      ToggleBlending();
+    }
+  } else {
+    if (toggleHits > 0) {
+      if (toggleHits < 50) {
+        TogglePalette();
+      }
+    }
+    toggleHits = 0;
+  }
 }
 
 bool PlayRoutine() {
