@@ -49,6 +49,8 @@ void setup() {
   currentBlending = LINEARBLEND;
 }
 
+int direction = 1;
+
 void loop() {
   ToggleRoutine();
 
@@ -64,8 +66,9 @@ void loop() {
     8, MAX_BRIGHTNESS);
   FastLED.setBrightness(brightness);
 
+  int speed = map(clamp(analogRead(A1) - 20, 0, 1023), 0, 950, 0, 1023);
   static word moveOffset = 0;
-  moveOffset += max(0, analogRead(A1) - 40);
+  moveOffset += speed * direction;
 
   static uint8_t startIndex = 0;
   startIndex = moveOffset / 256;
@@ -83,6 +86,11 @@ void ToggleRoutine() {
     if (toggleHits == 50) {
       ToggleBlending();
     }
+    if (toggleHits == 100) {
+      // Toggle back blending if we reached 100 ticks
+      ToggleBlending();
+      direction *= -1;
+    }
   } else {
     if (toggleHits > 0) {
       if (toggleHits < 50) {
@@ -91,6 +99,16 @@ void ToggleRoutine() {
     }
     toggleHits = 0;
   }
+}
+
+int clamp(int value, int min, int max) {
+  if (value > max) {
+    return max;
+  }
+  if (value < min) {
+    return min;
+  }
+  return value;
 }
 
 bool PlayRoutine() {
