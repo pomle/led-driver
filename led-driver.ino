@@ -52,11 +52,14 @@ void setup() {
 int direction = 1;
 
 void loop() {
+  static word moveOffset = 0;
+
   ToggleRoutine();
 
   if (!PlayRoutine()) {
     FastLED.clear(true);
     delay(1000 / UPDATES_PER_SECOND);
+    moveOffset = 0;
     return;
   }
 
@@ -66,12 +69,11 @@ void loop() {
     8, MAX_BRIGHTNESS);
   FastLED.setBrightness(brightness);
 
-  int speed = map(clamp(analogRead(A1) - 20, 0, 1023), 0, 950, 0, 1023);
-  static word moveOffset = 0;
-  moveOffset += speed * 2 * direction;
-
   static uint8_t startIndex = 0;
   startIndex = moveOffset / 256;
+  
+  int speed = clamp(analogRead(A1) - 50, 0, 1000);
+  moveOffset += speed * 2 * direction;
   FillLEDsFromPaletteColors(startIndex);  // 0-255
 
   FastLED.show();
