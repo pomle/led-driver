@@ -157,6 +157,7 @@ CRGBPalette16 palettes[] = {
 };
 
 void TogglePalette() {
+  static int paletteIndex = 0;
   paletteIndex++;
   int len = sizeof(palettes) / sizeof(palettes[0]);
   int p = paletteIndex % len;
