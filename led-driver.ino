@@ -5,12 +5,12 @@
 #define COLOR_BUTTON 8
 #define BRIGHTNESS_PIN A1
 #define SPEED_PIN A2
-#define LED_PIN 3
+#define LED_PIN 2
 
 #define PALETTE_ADDRESS 5
 #define DIRECTION_ADDRESS 6
 
-#define NUM_LEDS 64
+#define NUM_LEDS 43
 #define BRIGHTNESS 64
 #define LED_TYPE WS2811
 #define COLOR_ORDER GRB
@@ -46,6 +46,7 @@ extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
 char direction = 1;
 byte paletteIndex = 0;
+word offset = 0;
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
@@ -54,31 +55,23 @@ void setup() {
   EEPROM.get(PALETTE_ADDRESS, paletteIndex);
   EEPROM.get(DIRECTION_ADDRESS, direction);
 
-  delay(3000);  // power-up safety delay
+  delay(2000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(128);
 
   currentBlending = LINEARBLEND;
 }
 
 void loop() {
-  static word moveOffset = 0;
+  //ToggleRoutine();
 
-  ToggleRoutine();
-
-  if (!PlayRoutine()) {
-    FastLED.clear(true);
-    delay(1000 / UPDATES_PER_SECOND);
-    moveOffset = 0;
-    return;
-  }
-
-  HandleBrightness();
+  //HandleBrightness();
 
   static uint8_t startIndex = 0;
-  startIndex = moveOffset / 256;
+  startIndex = offset / 256;
   
-  int speed = clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
-  moveOffset += speed * 2 * direction;
+  int speed = 25;
+  offset += speed * 2 * direction;
   FillLEDsFromPaletteColors(startIndex);  // 0-255
 
   FastLED.show();
