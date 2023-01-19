@@ -1,10 +1,13 @@
 #include <FastLED.h>
+#include <EEPROM.h>
 
 #define PLAY_BUTTON 10
 #define COLOR_BUTTON 8
 #define BRIGHTNESS_PIN A1
 #define SPEED_PIN A2
 #define LED_PIN 3
+
+#define PALETTE_ADDRESS 5
 
 #define NUM_LEDS 64
 #define BRIGHTNESS 64
@@ -40,18 +43,20 @@ TBlendType currentBlending;
 extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
+int direction = 1;
+byte paletteIndex = 0;
+
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
   pinMode(COLOR_BUTTON, INPUT);
+
+  EEPROM.get(PALETTE_ADDRESS, paletteIndex);
 
   delay(3000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 
   currentBlending = LINEARBLEND;
 }
-
-int direction = 1;
-byte paletteIndex = 0;
 
 void loop() {
   static word moveOffset = 0;
@@ -172,6 +177,7 @@ void FillLEDsFromPaletteColors(uint8_t colorIndex) {
 void TogglePalette() {
   int len = sizeof(palettes) / sizeof(palettes[0]);
   paletteIndex = (paletteIndex + 1) % len;
+  EEPROM.put(PALETTE_ADDRESS, paletteIndex);
 }
 
 void ToggleBlending() {
