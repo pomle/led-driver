@@ -1,9 +1,11 @@
 #include <FastLED.h>
 
-#define PLAY_BUTTON 2
-#define COLOR_BUTTON 3
+#define PLAY_BUTTON 10
+#define COLOR_BUTTON 8
+#define BRIGHTNESS_PIN A1
+#define SPEED_PIN A2
+#define LED_PIN 3
 
-#define LED_PIN 5
 #define NUM_LEDS 64
 #define BRIGHTNESS 64
 #define LED_TYPE WS2811
@@ -63,22 +65,31 @@ void loop() {
     return;
   }
 
-  int brightness = map(
-    analogRead(A0) - 10,
-    0, 1000,
-    12, MAX_BRIGHTNESS);
-  FastLED.setBrightness(brightness);
+  HandleBrightness();
 
   static uint8_t startIndex = 0;
   startIndex = moveOffset / 256;
   
-  int speed = clamp(analogRead(A1) - 50, 0, 1000);
+  int speed = clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
   moveOffset += speed * 2 * direction;
   FillLEDsFromPaletteColors(startIndex);  // 0-255
 
   FastLED.show();
 
   FastLED.delay(1000 / UPDATES_PER_SECOND);
+}
+
+void HandleBrightness() {
+  int brightness = 0;
+  for (int i=0; i< 16; i++) brightness += analogRead(BRIGHTNESS_PIN);
+  brightness /= 16;
+
+  brightness = map(
+    brightness - 10,
+    0, 1000,
+    4, MAX_BRIGHTNESS);
+  
+  FastLED.setBrightness(brightness);
 }
 
 void ToggleRoutine() {
