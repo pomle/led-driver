@@ -8,6 +8,7 @@
 #define LED_PIN 3
 
 #define PALETTE_ADDRESS 5
+#define DIRECTION_ADDRESS 6
 
 #define NUM_LEDS 64
 #define BRIGHTNESS 64
@@ -43,7 +44,7 @@ TBlendType currentBlending;
 extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
-int direction = 1;
+char direction = 1;
 byte paletteIndex = 0;
 
 void setup() {
@@ -51,6 +52,7 @@ void setup() {
   pinMode(COLOR_BUTTON, INPUT);
 
   EEPROM.get(PALETTE_ADDRESS, paletteIndex);
+  EEPROM.get(DIRECTION_ADDRESS, direction);
 
   delay(3000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -108,6 +110,7 @@ void ToggleRoutine() {
       // Toggle back blending if we reached 100 ticks
       ToggleBlending();
       direction *= -1;
+      EEPROM.put(DIRECTION_ADDRESS, direction);
     }
   } else {
     if (toggleHits > 0) {
