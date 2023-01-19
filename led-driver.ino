@@ -150,7 +150,6 @@ void FillLEDsFromPaletteColors(uint8_t colorIndex) {
   }
 }
 
-int paletteIndex = 0;
 
 CRGBPalette16 palettes[] = {
   RainbowColors_p,
