@@ -47,11 +47,11 @@ void setup() {
   delay(3000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 
-  currentPalette = RainbowColors_p;
   currentBlending = LINEARBLEND;
 }
 
 int direction = 1;
+byte paletteIndex = 0;
 
 void loop() {
   static word moveOffset = 0;
@@ -141,16 +141,6 @@ bool PlayRoutine() {
   return playState;
 }
 
-void FillLEDsFromPaletteColors(uint8_t colorIndex) {
-  uint8_t brightness = 255;
-
-  for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(currentPalette, colorIndex, brightness, currentBlending);
-    colorIndex += 3;
-  }
-}
-
-
 CRGBPalette16 palettes[] = {
   RainbowColors_p,
   RainbowStripeColors_p,
@@ -166,12 +156,22 @@ CRGBPalette16 palettes[] = {
   SetupWhiteFlashPalette(),
 };
 
+void FillLEDsFromPaletteColors(uint8_t colorIndex) {
+  uint8_t brightness = 255;
+
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = ColorFromPalette(
+      palettes[paletteIndex], 
+      colorIndex, 
+      brightness, 
+      currentBlending);
+    colorIndex += 3;
+  }
+}
+
 void TogglePalette() {
-  static int paletteIndex = 0;
-  paletteIndex++;
   int len = sizeof(palettes) / sizeof(palettes[0]);
-  int p = paletteIndex % len;
-  currentPalette = palettes[p];
+  paletteIndex = (paletteIndex + 1) % len;
 }
 
 void ToggleBlending() {
