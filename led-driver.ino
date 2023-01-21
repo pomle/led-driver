@@ -63,12 +63,9 @@ void loop() {
 
   //HandleBrightness();
 
-  static uint8_t startIndex = 0;
-  startIndex = offset / 256;
-  
   int speed = 25;
   offset += speed * 2 * direction;
-  FillLEDsFromPaletteColors(startIndex);  // 0-255
+  FillLEDsFromPaletteColors(offset / 256);  // 0-255
 
   FastLED.show();
 
