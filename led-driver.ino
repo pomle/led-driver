@@ -46,6 +46,7 @@ extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
 char direction = 1;
 byte paletteIndex = 0;
+word offset = 0;
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
@@ -61,24 +62,22 @@ void setup() {
 }
 
 void loop() {
-  static word moveOffset = 0;
-
   ToggleRoutine();
 
   if (!PlayRoutine()) {
     FastLED.clear(true);
     delay(1000 / UPDATES_PER_SECOND);
-    moveOffset = 0;
+    offset = 0;
     return;
   }
 
   HandleBrightness();
 
   static uint8_t startIndex = 0;
-  startIndex = moveOffset / 256;
+  startIndex = offset / 256;
   
   int speed = clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
-  moveOffset += speed * 2 * direction;
+  offset += speed * 2 * direction;
   FillLEDsFromPaletteColors(startIndex);  // 0-255
 
   FastLED.show();
