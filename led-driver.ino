@@ -1,5 +1,4 @@
 #include <FastLED.h>
-#include <EEPROM.h>
 
 #define PLAY_BUTTON 10
 #define COLOR_BUTTON 8
@@ -52,9 +51,6 @@ void setup() {
   pinMode(PLAY_BUTTON, INPUT);
   pinMode(COLOR_BUTTON, INPUT);
 
-  EEPROM.get(PALETTE_ADDRESS, paletteIndex);
-  EEPROM.get(DIRECTION_ADDRESS, direction);
-
   delay(2000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(128);
@@ -103,7 +99,6 @@ void ToggleRoutine() {
       // Toggle back blending if we reached 100 ticks
       ToggleBlending();
       direction *= -1;
-      EEPROM.put(DIRECTION_ADDRESS, direction);
     }
   } else {
     if (toggleHits > 0) {
@@ -173,7 +168,6 @@ void FillLEDsFromPaletteColors(uint8_t colorIndex) {
 void TogglePalette() {
   int len = sizeof(palettes) / sizeof(palettes[0]);
   paletteIndex = (paletteIndex + 1) % len;
-  EEPROM.put(PALETTE_ADDRESS, paletteIndex);
 }
 
 void ToggleBlending() {
