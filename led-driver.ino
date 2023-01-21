@@ -135,6 +135,7 @@ bool PlayRoutine() {
 }
 
 CRGBPalette16 palettes[] = {
+  SetupTotallyRandomPalette(),
   RainbowColors_p,
   RainbowStripeColors_p,
   CloudColors_p,
@@ -144,7 +145,6 @@ CRGBPalette16 palettes[] = {
   ForestColors_p,
   SetupSwedenPalette(),
   SetupBlackAndWhiteStripedPalette(),
-  SetupTotallyRandomPalette(),
   SetupPurpleAndGreenPalette(),
   SetupWhiteFlashPalette(),
 };
