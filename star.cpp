@@ -20,7 +20,7 @@ int main() {
   }
 
   uint8_t index = 0;
-  for (int tick = 0; tick < 10000; tick++) {
+  for (int tick = 0; ; tick++) {
     index = LEDS + 1;
 
     if (tick % 10 == 0) {
@@ -28,13 +28,13 @@ int main() {
     }
 
     if (index < LEDS && leds[index] == 0) {
-      leds[index] = 2;
+      leds[index] = 1;
     }
     
     for (int i = 0; i < LEDS; i++) {
       uint8_t intensity = leds[i];
       if (intensity > 0) {
-        intensity += intensity % 2 == 0 ? 2 : -2;
+        intensity += intensity % 2 == 0 ? -2 : 2;
         if (intensity > 253) {
           intensity -= 1;
         }
