@@ -4,10 +4,10 @@
 
 class StarProgram : public LEDProgram {
 private:
-  int state[NUM_LEDS];
+  uint8_t state[NUM_LEDS];
 
 public:
   StarProgram();
 
-  void update(int tick, CRGB leds[]);
+  void update(const unsigned long& tick, CRGB leds[]);
 };

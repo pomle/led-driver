@@ -5,7 +5,7 @@
 
 class LEDProgram {
 public:
-  void update(int tick, CRGB leds[]);
+  void update(const unsigned long& tick, CRGB leds[]);
 };
 
 #endif

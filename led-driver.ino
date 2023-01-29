@@ -34,14 +34,14 @@ extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
 byte programIndex = 0;
 char direction = 1;
-word tick = 0;
+unsigned long tick = 0;
 
-PaletteProgram programs[] = {
-  PaletteProgram(RainbowColors_p),
+StarProgram programs[] = {
+  StarProgram(),
   //StarProgram(),
 };
 
-PaletteProgram program = PaletteProgram(RainbowColors_p);
+StarProgram program = StarProgram();
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
@@ -66,10 +66,6 @@ void loop() {
   int speed = 100;
   tick += speed * 2 * direction;
   program.update(tick, leds);
-
-  char buffer[128];
-  sprintf(buffer, "%02X", leds[0]);
-  Serial.println(buffer);
 
   FastLED.show();
 

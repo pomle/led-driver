@@ -10,5 +10,5 @@ private:
 public:
   PaletteProgram(CRGBPalette16 p);
 
-  void update(int tick, CRGB leds[]);
+  void update(const unsigned long& tick, CRGB leds[]);
 };

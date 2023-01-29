@@ -3,6 +3,6 @@
 #include "LEDProgram.hpp"
 #include "config.hpp"
 
-void LEDProgram::update(int tick, CRGB leds[]) {
+void LEDProgram::update(const unsigned long& tick, CRGB leds[]) {
   Serial.println(tick);
 };
