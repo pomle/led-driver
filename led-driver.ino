@@ -63,11 +63,13 @@ void loop() {
 
   //HandleBrightness();
 
-  int speed = 25;
+  int speed = 100;
   tick += speed * 2 * direction;
   program.update(tick, leds);
 
-  Serial.println("tick");
+  char buffer[128];
+  sprintf(buffer, "%02X", leds[0]);
+  Serial.println(buffer);
 
   FastLED.show();
 

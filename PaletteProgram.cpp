@@ -12,7 +12,7 @@ void PaletteProgram::update(int tick, CRGB leds[]) {
   uint8_t colorIndex = tick / 256;
   uint8_t brightness = 255;
 
-  Serial.println(brightness);
+  //Serial.println(brightness);
 
   for (int i = 0; i < NUM_LEDS; i++) {
     leds[i] = ColorFromPalette(
@@ -22,4 +22,8 @@ void PaletteProgram::update(int tick, CRGB leds[]) {
       blending);
     colorIndex += 3;
   }
+
+  char buffer[128];
+  sprintf(buffer, "%02X", leds[0]);
+  Serial.println(buffer);
 };
