@@ -1,22 +1,11 @@
 #include <FastLED.h>
+#include "config.hpp"
+#include "LEDProgram.hpp"
+#include "StarProgram.hpp"
+#include "PaletteProgram.hpp"
 
-#define PLAY_BUTTON 10
-#define COLOR_BUTTON 8
-#define BRIGHTNESS_PIN A1
-#define SPEED_PIN A2
-#define LED_PIN 2
-
-#define PALETTE_ADDRESS 5
-#define DIRECTION_ADDRESS 6
-
-#define NUM_LEDS 43
-#define BRIGHTNESS 255
-#define LED_TYPE WS2811
-#define COLOR_ORDER GRB
-#define MAX_BRIGHTNESS 128
 CRGB leds[NUM_LEDS];
 
-#define UPDATES_PER_SECOND 100
 
 // This example shows several ways to set up and use 'palettes' of colors
 // with FastLED.
@@ -43,9 +32,16 @@ TBlendType currentBlending;
 extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
+byte programIndex = 0;
 char direction = 1;
-byte paletteIndex = 0;
-word offset = 0;
+word tick = 0;
+
+PaletteProgram programs[] = {
+  PaletteProgram(RainbowColors_p),
+  //StarProgram(),
+};
+
+PaletteProgram program = PaletteProgram(RainbowColors_p);
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
@@ -54,6 +50,10 @@ void setup() {
   delay(2000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(128);
+
+  Serial.begin(9600);
+
+  program = programs[0];
 
   currentBlending = LINEARBLEND;
 }
@@ -64,8 +64,10 @@ void loop() {
   //HandleBrightness();
 
   int speed = 25;
-  offset += speed * 2 * direction;
-  FillLEDsFromPaletteColors(offset / 256);  // 0-255
+  tick += speed * 2 * direction;
+  program.update(tick, leds);
+
+  Serial.println("tick");
 
   FastLED.show();
 
@@ -100,7 +102,7 @@ void ToggleRoutine() {
   } else {
     if (toggleHits > 0) {
       if (toggleHits < 50) {
-        TogglePalette();
+        ToggleProgram();
       }
     }
     toggleHits = 0;
@@ -149,22 +151,10 @@ CRGBPalette16 palettes[] = {
   SetupWhiteFlashPalette(),
 };
 
-void FillLEDsFromPaletteColors(uint8_t colorIndex) {
-  uint8_t brightness = 255;
-
-  for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(
-      palettes[paletteIndex], 
-      colorIndex, 
-      brightness, 
-      currentBlending);
-    colorIndex += 3;
-  }
-}
-
-void TogglePalette() {
-  int len = sizeof(palettes) / sizeof(palettes[0]);
-  paletteIndex = (paletteIndex + 1) % len;
+void ToggleProgram() {
+  int len = sizeof(programs) / sizeof(programs[0]);
+  programIndex = (programIndex + 1) % len;
+  program = programs[programIndex];
 }
 
 void ToggleBlending() {
