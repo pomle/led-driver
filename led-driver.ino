@@ -40,6 +40,10 @@ LEDProgram *program;
 
 StarProgram star = StarProgram();
 
+LEDProgram* programs[] = {
+  &star,
+};
+
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
   pinMode(COLOR_BUTTON, INPUT);
@@ -50,7 +54,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  program = &star;
+  program = programs[0];
 
   currentBlending = LINEARBLEND;
 }
