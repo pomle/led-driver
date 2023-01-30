@@ -32,15 +32,31 @@ TBlendType currentBlending;
 extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
+// This function fills the palette with totally random colors.
+CRGBPalette16 SetupTotallyRandomPalette() {
+  CRGBPalette16 p;
+  for (int i = 0; i < 16; i++) {
+    p[i] = CHSV(random8(), 255, 255);
+  }
+  return p;
+}
+
+
 byte programIndex = 0;
 char direction = 1;
 unsigned long tick = 0;
 
 LEDProgram *program;
 
+PaletteProgram randoms = PaletteProgram(SetupTotallyRandomPalette());
+
+PaletteProgram rainbow = PaletteProgram(RainbowColors_p);
+
 StarProgram star = StarProgram();
 
 LEDProgram* programs[] = {
+  &randoms,
+  &rainbow,
   &star,
 };
 
@@ -60,7 +76,7 @@ void setup() {
 }
 
 void loop() {
-  //ToggleRoutine();
+  ToggleRoutine();
 
   HandleBrightness();
 
@@ -151,9 +167,9 @@ CRGBPalette16 palettes[] = {
 };
 
 void ToggleProgram() {
-  //int len = sizeof(programs) / sizeof(programs[0]);
-  //programIndex = (programIndex + 1) % len;
-  //program = programs[programIndex];
+  int len = sizeof(programs) / sizeof(programs[0]);
+  programIndex = (programIndex + 1) % len;
+  program = programs[programIndex];
 }
 
 void ToggleBlending() {
@@ -162,15 +178,6 @@ void ToggleBlending() {
   } else {
     currentBlending = LINEARBLEND;
   }
-}
-
-// This function fills the palette with totally random colors.
-CRGBPalette16 SetupTotallyRandomPalette() {
-  CRGBPalette16 p;
-  for (int i = 0; i < 16; i++) {
-    p[i] = CHSV(random8(), 255, 255);
-  }
-  return p;
 }
 
 CRGBPalette16 SetupWhiteFlashPalette() {

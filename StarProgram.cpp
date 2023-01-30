@@ -28,11 +28,11 @@ void StarProgram::update(const unsigned long& tick, CRGB leds[]) {
       if (intensity > 253) {
         intensity -= 1;
       }
-
-      leds[i][0] = intensity;
-      leds[i][1] = intensity;
-      leds[i][2] = intensity;
     }
     state[i] = intensity;
+    
+    leds[i][0] = intensity;
+    leds[i][1] = intensity;
+    leds[i][2] = intensity;
   }
 };
