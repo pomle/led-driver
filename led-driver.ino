@@ -36,12 +36,9 @@ byte programIndex = 0;
 char direction = 1;
 unsigned long tick = 0;
 
-StarProgram programs[] = {
-  StarProgram(),
-  //StarProgram(),
-};
+LEDProgram *program;
 
-StarProgram program = StarProgram();
+StarProgram star = StarProgram();
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
@@ -53,7 +50,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  program = programs[0];
+  program = &star;
 
   currentBlending = LINEARBLEND;
 }
@@ -61,11 +58,11 @@ void setup() {
 void loop() {
   //ToggleRoutine();
 
-  //HandleBrightness();
+  HandleBrightness();
 
   int speed = 100;
   tick += speed * 2 * direction;
-  program.update(tick, leds);
+  program->update(tick, leds);
 
   FastLED.show();
 
@@ -150,9 +147,9 @@ CRGBPalette16 palettes[] = {
 };
 
 void ToggleProgram() {
-  int len = sizeof(programs) / sizeof(programs[0]);
-  programIndex = (programIndex + 1) % len;
-  program = programs[programIndex];
+  //int len = sizeof(programs) / sizeof(programs[0]);
+  //programIndex = (programIndex + 1) % len;
+  //program = programs[programIndex];
 }
 
 void ToggleBlending() {

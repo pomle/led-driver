@@ -4,5 +4,5 @@
 #include "config.hpp"
 
 void LEDProgram::update(const unsigned long& tick, CRGB leds[]) {
-  Serial.println(tick);
+  Serial.println("LEDProgram");
 };

@@ -5,7 +5,7 @@
 
 class LEDProgram {
 public:
-  void update(const unsigned long& tick, CRGB leds[]);
+  virtual void update(const unsigned long& tick, CRGB leds[]);
 };
 
 #endif
