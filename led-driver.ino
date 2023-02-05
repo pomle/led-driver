@@ -1,5 +1,6 @@
 #include <FastLED.h>
 #include <EEPROM.h>
+#include "context.hpp"
 #include "config.hpp"
 #include "LEDProgram.hpp"
 #include "StarProgram.hpp"
@@ -98,12 +99,6 @@ LEDProgram* programs[] = {
 
 byte programIndex = 0;
 
-struct PlayContext {
-  bool playback = false;
-  int speed = 0;  
-  char direction = 1;
-  unsigned long tick = 0;
-};
 
 PlayContext context;
 
@@ -141,7 +136,7 @@ void loop() {
 
   context.speed = 25; //clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
   context.tick += context.speed * 2 * context.direction;
-  program->update(context.tick, leds);
+  program->update(context, leds);
 
   FastLED.show();
 

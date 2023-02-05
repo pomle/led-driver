@@ -9,5 +9,5 @@ private:
 public:
   StarProgram();
 
-  void update(const unsigned long& tick, CRGB leds[]);
+  void update(const PlayContext& context, CRGB leds[]);
 };

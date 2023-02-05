@@ -9,11 +9,13 @@ StarProgram::StarProgram() {
   }
 };
 
-void StarProgram::update(const unsigned long& tick, CRGB leds[]) {
+void StarProgram::update(const PlayContext& context, CRGB leds[]) {
+  Serial.println(context.tick);
+
   uint8_t index = 0;
   index = NUM_LEDS + 1;
 
-  if (tick % 10000 == 0) {
+  if (context.tick % 10000 == 0) {
     index = rand() % NUM_LEDS;
   }
 
