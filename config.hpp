@@ -1,4 +1,4 @@
-#define PLAY_BUTTON 3
+#define PLAY_BUTTON 10
 #define COLOR_BUTTON 8
 #define BRIGHTNESS_PIN A1
 #define SPEED_PIN A2

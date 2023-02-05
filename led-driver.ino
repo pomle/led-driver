@@ -97,6 +97,8 @@ LEDProgram* programs[] = {
 };
 
 
+
+bool playState = false;
 byte programIndex = 0;
 char direction = 1;
 unsigned long tick = 0;
@@ -122,6 +124,13 @@ void setup() {
 }
 
 void loop() {
+  if (!PlayRoutine()) {
+    FastLED.clear(true);
+    FastLED.show();
+    FastLED.delay(1000 / UPDATES_PER_SECOND);
+    return;
+  }
+  
   ToggleRoutine();
 
   HandleBrightness();
@@ -182,7 +191,6 @@ int clamp(int value, int min, int max) {
 }
 
 bool PlayRoutine() {
-  static bool playState = false;
   static unsigned int playHits = 0;
 
   if (digitalRead(PLAY_BUTTON) == HIGH) {
