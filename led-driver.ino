@@ -33,7 +33,7 @@ extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
 // This function fills the palette with totally random colors.
-CRGBPalette16 SetupTotallyRandomPalette() {
+CRGBPalette16 makeRandomPalette() {
   CRGBPalette16 p;
   for (int i = 0; i < 16; i++) {
     p[i] = CHSV(random8(), 255, 255);
@@ -41,8 +41,27 @@ CRGBPalette16 SetupTotallyRandomPalette() {
   return p;
 }
 
+CRGBPalette16 makeWhiteFlashPalette() {
+  CRGBPalette16 palette;
+  fill_solid(palette, 16, CRGB::Black);
+  palette[15] = CRGB::White;
+  return palette;
+}
 
-auto randoms = PaletteProgram(SetupTotallyRandomPalette());
+CRGBPalette16 makeBlackAndWhiteStripedPalette() {
+  CRGBPalette16 palette;
+  // 'black out' all 16 palette entries...
+  fill_solid(palette, 16, CRGB::Black);
+  // and set every fourth one to white.
+  palette[0] = CRGB::White;
+  palette[4] = CRGB::White;
+  palette[8] = CRGB::White;
+  palette[12] = CRGB::White;
+
+  return palette;
+}
+
+auto randoms = PaletteProgram(makeRandomPalette());
 auto rainbow = PaletteProgram(RainbowColors_p);
 auto rainbowStripe = PaletteProgram(RainbowStripeColors_p);
 auto cloud = PaletteProgram(CloudColors_p);
@@ -50,10 +69,14 @@ auto party = PaletteProgram(PartyColors_p);
 auto ocean = PaletteProgram(OceanColors_p);
 auto lava = PaletteProgram(LavaColors_p);
 auto forest = PaletteProgram(ForestColors_p);
-auto sweden = PaletteProgram(SetupSwedenPalette());
-auto black_white = PaletteProgram(SetupBlackAndWhiteStripedPalette());
-auto purple_green = PaletteProgram(SetupPurpleAndGreenPalette());
-auto flash = PaletteProgram(SetupWhiteFlashPalette());
+auto sweden = PaletteProgram({
+  CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
+  CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
+  CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
+  CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
+});
+auto black_white = PaletteProgram(makeBlackAndWhiteStripedPalette());
+auto flash = PaletteProgram(makeWhiteFlashPalette());
 
 auto star = StarProgram();
 
@@ -68,7 +91,6 @@ LEDProgram* programs[] = {
   &forest,
   &sweden,
   &black_white,
-  &purple_green,
   &flash,
   &star,
 };
@@ -184,60 +206,6 @@ void ToggleBlending() {
     currentBlending = LINEARBLEND;
   }
 }
-
-CRGBPalette16 SetupWhiteFlashPalette() {
-  CRGBPalette16 palette;
-  fill_solid(palette, 16, CRGB::Black);
-  palette[15] = CRGB::White;
-  return palette;
-}
-
-// This function sets up a palette of black and white stripes,
-// using code.  Since the palette is effectively an array of
-// sixteen CRGB colors, the various fill_* functions can be used
-// to set them up.
-CRGBPalette16 SetupBlackAndWhiteStripedPalette() {
-  CRGBPalette16 palette;
-  // 'black out' all 16 palette entries...
-  fill_solid(palette, 16, CRGB::Black);
-  // and set every fourth one to white.
-  palette[0] = CRGB::White;
-  palette[4] = CRGB::White;
-  palette[8] = CRGB::White;
-  palette[12] = CRGB::White;
-
-  return palette;
-}
-
-
-// This function sets up a palette of black and white stripes,
-// using code.  Since the palette is effectively an array of
-// sixteen CRGB colors, the various fill_* functions can be used
-// to set them up.
-CRGBPalette16 SetupSwedenPalette() {
-  CRGBPalette16 palette = {
-    CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
-    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
-    CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
-    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
-  };
-  return palette;
-}
-
-// This function sets up a palette of purple and green stripes.
-CRGBPalette16 SetupPurpleAndGreenPalette() {
-  CRGB purple = CHSV(HUE_PURPLE, 255, 255);
-  CRGB green = CHSV(HUE_GREEN, 255, 255);
-  CRGB black = CRGB::Black;
-
-  CRGBPalette16 p = CRGBPalette16(
-    green, green, black, black,
-    purple, purple, black, black,
-    green, green, black, black,
-    purple, purple, black, black);
-  return p;
-}
-
 
 // This example shows how to set up a static color palette
 // which is stored in PROGMEM (flash), which is almost always more
