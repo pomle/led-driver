@@ -9,7 +9,7 @@ PaletteProgram::PaletteProgram(CRGBPalette16 p) {
 };
 
 void PaletteProgram::update(const PlayContext& context, CRGB leds[]) {
-  uint8_t colorIndex = context.tick / 256;
+  uint8_t colorIndex = offset / 256;
   uint8_t brightness = 255;
 
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -20,4 +20,6 @@ void PaletteProgram::update(const PlayContext& context, CRGB leds[]) {
       blending);
     colorIndex += 3;
   }
+
+  offset += context.speed * 2 * context.direction;
 };

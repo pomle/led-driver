@@ -134,8 +134,8 @@ void loop() {
 
   HandleBrightness();
 
-  context.speed = 25; //clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
-  context.tick += context.speed * 2 * context.direction;
+  context.speed = clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
+  context.tick += 1;
   program->update(context, leds);
 
   FastLED.show();

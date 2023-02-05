@@ -3,6 +3,16 @@
 #include "StarProgram.hpp"
 #include "config.hpp"
 
+int clamp2(int value, int min, int max) {
+  if (value > max) {
+    return max;
+  }
+  if (value < min) {
+    return min;
+  }
+  return value;
+}
+
 StarProgram::StarProgram() {
   for (int i = 0; i < NUM_LEDS; i++) {
     state[i] = 0; 
@@ -10,12 +20,12 @@ StarProgram::StarProgram() {
 };
 
 void StarProgram::update(const PlayContext& context, CRGB leds[]) {
-  Serial.println(context.tick);
-
   uint8_t index = 0;
   index = NUM_LEDS + 1;
 
-  if (context.tick % 10000 == 0) {
+  int rate = clamp2(180 - context.speed / 5, 1, 180);
+
+  if (context.tick % rate == 0) {
     index = rand() % NUM_LEDS;
   }
 
