@@ -113,7 +113,6 @@ void setup() {
 
   delay(2000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.setBrightness(128);
 
   Serial.begin(9600);
 
