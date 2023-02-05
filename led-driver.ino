@@ -42,23 +42,43 @@ CRGBPalette16 SetupTotallyRandomPalette() {
 }
 
 
-byte programIndex = 0;
-char direction = 1;
-unsigned long tick = 0;
+auto randoms = PaletteProgram(SetupTotallyRandomPalette());
+auto rainbow = PaletteProgram(RainbowColors_p);
+auto rainbowStripe = PaletteProgram(RainbowStripeColors_p);
+auto cloud = PaletteProgram(CloudColors_p);
+auto party = PaletteProgram(PartyColors_p);
+auto ocean = PaletteProgram(OceanColors_p);
+auto lava = PaletteProgram(LavaColors_p);
+auto forest = PaletteProgram(ForestColors_p);
+auto sweden = PaletteProgram(SetupSwedenPalette());
+auto black_white = PaletteProgram(SetupBlackAndWhiteStripedPalette());
+auto purple_green = PaletteProgram(SetupPurpleAndGreenPalette());
+auto flash = PaletteProgram(SetupWhiteFlashPalette());
 
-LEDProgram *program;
-
-PaletteProgram randoms = PaletteProgram(SetupTotallyRandomPalette());
-
-PaletteProgram rainbow = PaletteProgram(RainbowColors_p);
-
-StarProgram star = StarProgram();
+auto star = StarProgram();
 
 LEDProgram* programs[] = {
   &randoms,
   &rainbow,
+  &rainbowStripe,
+  &cloud,
+  &party,
+  &ocean,
+  &lava,
+  &forest,
+  &sweden,
+  &black_white,
+  &purple_green,
+  &flash,
   &star,
 };
+
+
+byte programIndex = 0;
+char direction = 1;
+unsigned long tick = 0;
+
+LEDProgram* program;
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
@@ -150,21 +170,6 @@ bool PlayRoutine() {
 
   return playState;
 }
-
-CRGBPalette16 palettes[] = {
-  SetupTotallyRandomPalette(),
-  RainbowColors_p,
-  RainbowStripeColors_p,
-  CloudColors_p,
-  PartyColors_p,
-  OceanColors_p,
-  LavaColors_p,
-  ForestColors_p,
-  SetupSwedenPalette(),
-  SetupBlackAndWhiteStripedPalette(),
-  SetupPurpleAndGreenPalette(),
-  SetupWhiteFlashPalette(),
-};
 
 void ToggleProgram() {
   int len = sizeof(programs) / sizeof(programs[0]);
