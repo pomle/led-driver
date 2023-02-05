@@ -1,23 +1,13 @@
 #include <FastLED.h>
 #include <EEPROM.h>
+#include "context.hpp"
+#include "config.hpp"
+#include "LEDProgram.hpp"
+#include "StarProgram.hpp"
+#include "PaletteProgram.hpp"
 
-#define PLAY_BUTTON 10
-#define COLOR_BUTTON 8
-#define BRIGHTNESS_PIN A1
-#define SPEED_PIN A2
-#define LED_PIN 3
-
-#define PALETTE_ADDRESS 5
-#define DIRECTION_ADDRESS 6
-
-#define NUM_LEDS 64
-#define BRIGHTNESS 64
-#define LED_TYPE WS2811
-#define COLOR_ORDER GRB
-#define MAX_BRIGHTNESS 128
 CRGB leds[NUM_LEDS];
 
-#define UPDATES_PER_SECOND 100
 
 // This example shows several ways to set up and use 'palettes' of colors
 // with FastLED.
@@ -44,41 +34,108 @@ TBlendType currentBlending;
 extern CRGBPalette16 myRedWhiteBluePalette;
 extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 
-char direction = 1;
-byte paletteIndex = 0;
-word offset = 0;
+// This function fills the palette with totally random colors.
+CRGBPalette16 makeRandomPalette() {
+  CRGBPalette16 p;
+  for (int i = 0; i < 16; i++) {
+    p[i] = CHSV(random8(), 255, 255);
+  }
+  return p;
+}
+
+CRGBPalette16 makeWhiteFlashPalette() {
+  CRGBPalette16 palette;
+  fill_solid(palette, 16, CRGB::Black);
+  palette[15] = CRGB::White;
+  return palette;
+}
+
+CRGBPalette16 makeBlackAndWhiteStripedPalette() {
+  CRGBPalette16 palette;
+  // 'black out' all 16 palette entries...
+  fill_solid(palette, 16, CRGB::Black);
+  // and set every fourth one to white.
+  palette[0] = CRGB::White;
+  palette[4] = CRGB::White;
+  palette[8] = CRGB::White;
+  palette[12] = CRGB::White;
+
+  return palette;
+}
+
+auto randoms = PaletteProgram(makeRandomPalette());
+auto rainbow = PaletteProgram(RainbowColors_p);
+auto rainbowStripe = PaletteProgram(RainbowStripeColors_p);
+auto cloud = PaletteProgram(CloudColors_p);
+auto party = PaletteProgram(PartyColors_p);
+auto ocean = PaletteProgram(OceanColors_p);
+auto lava = PaletteProgram(LavaColors_p);
+auto forest = PaletteProgram(ForestColors_p);
+auto sweden = PaletteProgram({
+  CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
+  CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
+  CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
+  CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
+});
+auto black_white = PaletteProgram(makeBlackAndWhiteStripedPalette());
+auto flash = PaletteProgram(makeWhiteFlashPalette());
+
+auto star = StarProgram();
+
+LEDProgram* programs[] = {
+  &randoms,
+  &rainbow,
+  &rainbowStripe,
+  &cloud,
+  &party,
+  &ocean,
+  &lava,
+  &forest,
+  &sweden,
+  &black_white,
+  &flash,
+  &star,
+};
+
+byte programIndex = 0;
+
+
+PlayContext context;
+
+LEDProgram* program;
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
   pinMode(COLOR_BUTTON, INPUT);
 
-  EEPROM.get(PALETTE_ADDRESS, paletteIndex);
-  EEPROM.get(DIRECTION_ADDRESS, direction);
+  EEPROM.get(PROGRAM_INDEX_ADDRESS, programIndex);
+  EEPROM.get(DIRECTION_ADDRESS, context.direction);
 
-  delay(3000);  // power-up safety delay
+  delay(2000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+
+  Serial.begin(9600);
+
+  program = programs[programIndex];
 
   currentBlending = LINEARBLEND;
 }
 
 void loop() {
-  ToggleRoutine();
-
   if (!PlayRoutine()) {
     FastLED.clear(true);
-    delay(1000 / UPDATES_PER_SECOND);
-    offset = 0;
+    FastLED.show();
+    FastLED.delay(1000 / UPDATES_PER_SECOND);
     return;
   }
+  
+  ToggleRoutine();
 
   HandleBrightness();
 
-  static uint8_t startIndex = 0;
-  startIndex = offset / 256;
-  
-  int speed = clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
-  offset += speed * 2 * direction;
-  FillLEDsFromPaletteColors(startIndex);  // 0-255
+  context.speed = clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
+  context.tick += 1;
+  program->update(context, leds);
 
   FastLED.show();
 
@@ -108,13 +165,13 @@ void ToggleRoutine() {
     if (toggleHits == 100) {
       // Toggle back blending if we reached 100 ticks
       ToggleBlending();
-      direction *= -1;
-      EEPROM.put(DIRECTION_ADDRESS, direction);
+      context.direction *= -1;
+      EEPROM.put(DIRECTION_ADDRESS, context.direction);
     }
   } else {
     if (toggleHits > 0) {
       if (toggleHits < 50) {
-        TogglePalette();
+        ToggleProgram();
       }
     }
     toggleHits = 0;
@@ -132,7 +189,6 @@ int clamp(int value, int min, int max) {
 }
 
 bool PlayRoutine() {
-  static bool playState = false;
   static unsigned int playHits = 0;
 
   if (digitalRead(PLAY_BUTTON) == HIGH) {
@@ -142,44 +198,17 @@ bool PlayRoutine() {
   }
 
   if (playHits == 1) {
-    playState = !playState;
+    context.playback = !context.playback;
   }
 
-  return playState;
+  return context.playback;
 }
 
-CRGBPalette16 palettes[] = {
-  RainbowColors_p,
-  RainbowStripeColors_p,
-  CloudColors_p,
-  PartyColors_p,
-  OceanColors_p,
-  LavaColors_p,
-  ForestColors_p,
-  SetupSwedenPalette(),
-  SetupBlackAndWhiteStripedPalette(),
-  SetupTotallyRandomPalette(),
-  SetupPurpleAndGreenPalette(),
-  SetupWhiteFlashPalette(),
-};
-
-void FillLEDsFromPaletteColors(uint8_t colorIndex) {
-  uint8_t brightness = 255;
-
-  for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(
-      palettes[paletteIndex], 
-      colorIndex, 
-      brightness, 
-      currentBlending);
-    colorIndex += 3;
-  }
-}
-
-void TogglePalette() {
-  int len = sizeof(palettes) / sizeof(palettes[0]);
-  paletteIndex = (paletteIndex + 1) % len;
-  EEPROM.put(PALETTE_ADDRESS, paletteIndex);
+void ToggleProgram() {
+  int len = sizeof(programs) / sizeof(programs[0]);
+  programIndex = (programIndex + 1) % len;
+  program = programs[programIndex];
+  EEPROM.put(PROGRAM_INDEX_ADDRESS, programIndex);
 }
 
 void ToggleBlending() {
@@ -189,69 +218,6 @@ void ToggleBlending() {
     currentBlending = LINEARBLEND;
   }
 }
-
-// This function fills the palette with totally random colors.
-CRGBPalette16 SetupTotallyRandomPalette() {
-  CRGBPalette16 p;
-  for (int i = 0; i < 16; i++) {
-    p[i] = CHSV(random8(), 255, 255);
-  }
-  return p;
-}
-
-CRGBPalette16 SetupWhiteFlashPalette() {
-  CRGBPalette16 palette;
-  fill_solid(palette, 16, CRGB::Black);
-  palette[15] = CRGB::White;
-  return palette;
-}
-
-// This function sets up a palette of black and white stripes,
-// using code.  Since the palette is effectively an array of
-// sixteen CRGB colors, the various fill_* functions can be used
-// to set them up.
-CRGBPalette16 SetupBlackAndWhiteStripedPalette() {
-  CRGBPalette16 palette;
-  // 'black out' all 16 palette entries...
-  fill_solid(palette, 16, CRGB::Black);
-  // and set every fourth one to white.
-  palette[0] = CRGB::White;
-  palette[4] = CRGB::White;
-  palette[8] = CRGB::White;
-  palette[12] = CRGB::White;
-
-  return palette;
-}
-
-
-// This function sets up a palette of black and white stripes,
-// using code.  Since the palette is effectively an array of
-// sixteen CRGB colors, the various fill_* functions can be used
-// to set them up.
-CRGBPalette16 SetupSwedenPalette() {
-  CRGBPalette16 palette = {
-    CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
-    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
-    CRGB::Yellow, CRGB::Yellow, CRGB::Yellow, CRGB::Black,
-    CRGB::Blue, CRGB::Blue, CRGB::Blue, CRGB::Black,
-  };
-  return palette;
-}
-
-// This function sets up a palette of purple and green stripes.
-CRGBPalette16 SetupPurpleAndGreenPalette() {
-  CRGB purple = CHSV(HUE_PURPLE, 255, 255);
-  CRGB green = CHSV(HUE_GREEN, 255, 255);
-  CRGB black = CRGB::Black;
-
-  CRGBPalette16 p = CRGBPalette16(
-    green, green, black, black,
-    purple, purple, black, black,
-    green, green, black, black,
-    purple, purple, black, black);
-  return p;
-}
-
 
 // This example shows how to set up a static color palette
 // which is stored in PROGMEM (flash), which is almost always more
