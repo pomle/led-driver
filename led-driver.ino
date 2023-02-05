@@ -96,12 +96,16 @@ LEDProgram* programs[] = {
   &star,
 };
 
-
-
-bool playState = false;
 byte programIndex = 0;
-char direction = 1;
-unsigned long tick = 0;
+
+struct PlayState {
+  bool playback = false;
+  int speed = 0;  
+  char direction = 1;
+  unsigned long tick = 0;
+};
+
+PlayState playState;
 
 LEDProgram* program;
 
@@ -110,7 +114,7 @@ void setup() {
   pinMode(COLOR_BUTTON, INPUT);
 
   EEPROM.get(PROGRAM_INDEX_ADDRESS, programIndex);
-  EEPROM.get(DIRECTION_ADDRESS, direction);
+  EEPROM.get(DIRECTION_ADDRESS, playState.direction);
 
   delay(2000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -135,9 +139,9 @@ void loop() {
 
   HandleBrightness();
 
-  int speed = 100;
-  tick += speed * 2 * direction;
-  program->update(tick, leds);
+  playState.speed = 25; //clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
+  playState.tick += playState.speed * 2 * playState.direction;
+  program->update(playState.tick, leds);
 
   FastLED.show();
 
@@ -167,8 +171,8 @@ void ToggleRoutine() {
     if (toggleHits == 100) {
       // Toggle back blending if we reached 100 ticks
       ToggleBlending();
-      direction *= -1;
-      EEPROM.put(DIRECTION_ADDRESS, direction);
+      playState.direction *= -1;
+      EEPROM.put(DIRECTION_ADDRESS, playState.direction);
     }
   } else {
     if (toggleHits > 0) {
@@ -200,10 +204,10 @@ bool PlayRoutine() {
   }
 
   if (playHits == 1) {
-    playState = !playState;
+    playState.playback = !playState.playback;
   }
 
-  return playState;
+  return playState.playback;
 }
 
 void ToggleProgram() {
