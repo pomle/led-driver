@@ -1,4 +1,5 @@
 #include <FastLED.h>
+#include <EEPROM.h>
 #include "config.hpp"
 #include "LEDProgram.hpp"
 #include "StarProgram.hpp"
@@ -106,13 +107,16 @@ void setup() {
   pinMode(PLAY_BUTTON, INPUT);
   pinMode(COLOR_BUTTON, INPUT);
 
+  EEPROM.get(PROGRAM_INDEX_ADDRESS, programIndex);
+  EEPROM.get(DIRECTION_ADDRESS, direction);
+
   delay(2000);  // power-up safety delay
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(128);
 
   Serial.begin(9600);
 
-  program = programs[0];
+  program = programs[programIndex];
 
   currentBlending = LINEARBLEND;
 }
@@ -155,6 +159,7 @@ void ToggleRoutine() {
       // Toggle back blending if we reached 100 ticks
       ToggleBlending();
       direction *= -1;
+      EEPROM.put(DIRECTION_ADDRESS, direction);
     }
   } else {
     if (toggleHits > 0) {
@@ -197,6 +202,7 @@ void ToggleProgram() {
   int len = sizeof(programs) / sizeof(programs[0]);
   programIndex = (programIndex + 1) % len;
   program = programs[programIndex];
+  EEPROM.put(PROGRAM_INDEX_ADDRESS, programIndex);
 }
 
 void ToggleBlending() {
