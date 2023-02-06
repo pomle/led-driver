@@ -1,7 +1,7 @@
 #define PLAY_BUTTON 10
 #define COLOR_BUTTON 8
 #define BRIGHTNESS_PIN A1
-#define SPEED_PIN A2
+#define INTENSITY_PIN A2
 #define LED_PIN 3
 
 #define PROGRAM_INDEX_ADDRESS 5

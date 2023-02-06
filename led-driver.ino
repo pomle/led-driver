@@ -125,7 +125,7 @@ void loop() {
 
   HandleBrightness();
 
-  context.speed = constrain(analogRead(SPEED_PIN) - 50, 0, 1000);
+  context.intensity = constrain(analogRead(INTENSITY_PIN) - 50, 0, 1000);
   context.tick += 1;
   program->update(context, leds);
 

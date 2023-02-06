@@ -22,7 +22,7 @@ void KITTProgram::update(const PlayContext& context, CRGB leds[]) {
     velocity = 0;
   }
 
-  velocity += context.speed;
+  velocity += context.intensity;
 
   if (position <= 0 && direction < 0) {
     direction = 1;

@@ -19,5 +19,5 @@ void PaletteProgram::update(const PlayContext& context, CRGB leds[]) {
     colorIndex += 3;
   }
 
-  offset += context.speed * 2 * context.direction;
+  offset += context.intensity * 2 * context.direction;
 };

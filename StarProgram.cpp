@@ -13,7 +13,7 @@ void StarProgram::update(const PlayContext& context, CRGB leds[]) {
   uint8_t index = 0;
   index = NUM_LEDS + 1;
 
-  int rate = constrain(180 - context.speed / 5, 1, 180);
+  int rate = constrain(180 - context.intensity / 5, 1, 180);
 
   if (context.tick % rate == 0) {
     index = rand() % NUM_LEDS;

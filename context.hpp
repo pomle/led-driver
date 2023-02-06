@@ -2,7 +2,7 @@
 
 struct PlayContext {
   bool playback = false;
-  int speed = 0;  
+  word intensity = 0;
   char direction = 1;
   unsigned long tick = 0;
   TBlendType blending = LINEARBLEND;
