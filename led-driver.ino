@@ -3,8 +3,9 @@
 #import "context.hpp"
 #include "config.hpp"
 #import "LEDProgram.hpp"
-#include "StarProgram.hpp"
 #include "PaletteProgram.hpp"
+#include "StarProgram.hpp"
+#include "KITTProgram.hpp"
 
 CRGB leds[NUM_LEDS];
 
@@ -71,6 +72,7 @@ auto sweden = PaletteProgram({
 });
 auto black_white = PaletteProgram(makeBlackAndWhiteStripedPalette());
 auto flash = PaletteProgram(makeWhiteFlashPalette());
+auto kitt = KITTProgram();
 
 auto star = StarProgram();
 
@@ -87,6 +89,7 @@ LEDProgram* programs[] = {
   &black_white,
   &flash,
   &star,
+  &kitt,
 };
 
 byte programIndex = 0;

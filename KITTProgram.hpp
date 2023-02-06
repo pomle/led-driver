@@ -5,6 +5,8 @@
 class KITTProgram : public LEDProgram {
 private:
   int position = 0;
+  int velocity = 0;
+  char direction = 1;
 
 public:
   KITTProgram();
