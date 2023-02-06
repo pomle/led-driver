@@ -133,7 +133,7 @@ void loop() {
 
   HandleBrightness();
 
-  context.speed = clamp(analogRead(SPEED_PIN) - 50, 0, 1000);
+  context.speed = constrain(analogRead(SPEED_PIN) - 50, 0, 1000);
   context.tick += 1;
   program->update(context, leds);
 
@@ -176,16 +176,6 @@ void ToggleRoutine() {
     }
     toggleHits = 0;
   }
-}
-
-int clamp(int value, int min, int max) {
-  if (value > max) {
-    return max;
-  }
-  if (value < min) {
-    return min;
-  }
-  return value;
 }
 
 bool PlayRoutine() {
