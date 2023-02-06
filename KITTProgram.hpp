@@ -4,8 +4,8 @@
 
 class KITTProgram : public LEDProgram {
 private:
-  int position = 0;
-  int velocity = 0;
+  byte position = 0;
+  word velocity = 0;
   char direction = 1;
 
 public:
