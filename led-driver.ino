@@ -1,8 +1,8 @@
 #include <FastLED.h>
 #include <EEPROM.h>
-#include "context.hpp"
+#import "context.hpp"
 #include "config.hpp"
-#include "LEDProgram.hpp"
+#import "LEDProgram.hpp"
 #include "StarProgram.hpp"
 #include "PaletteProgram.hpp"
 

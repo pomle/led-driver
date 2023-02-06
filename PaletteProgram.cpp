@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <FastLED.h>
 #include "PaletteProgram.hpp"
 #include "config.hpp"

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include "StarProgram.hpp"
-#include "config.hpp"
+#import "config.hpp"
 
 StarProgram::StarProgram() {
   for (int i = 0; i < NUM_LEDS; i++) {

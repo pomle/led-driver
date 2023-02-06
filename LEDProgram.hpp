@@ -1,12 +1,7 @@
 #include <FastLED.h>
-#include "context.hpp"
-
-#ifndef LED_PROGRAM
-#define LED_PROGRAM
+#import "context.hpp"
 
 class LEDProgram {
 public:
   virtual void update(const PlayContext& context, CRGB leds[]);
 };
-
-#endif
