@@ -27,14 +27,6 @@ CRGB leds[NUM_LEDS];
 // FastLED compact palettes are at the bottom of this file.
 
 
-
-CRGBPalette16 currentPalette;
-TBlendType currentBlending;
-
-extern CRGBPalette16 myRedWhiteBluePalette;
-extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
-
-// This function fills the palette with totally random colors.
 CRGBPalette16 makeRandomPalette() {
   CRGBPalette16 p;
   for (int i = 0; i < 16; i++) {
@@ -99,10 +91,11 @@ LEDProgram* programs[] = {
 
 byte programIndex = 0;
 
-
 PlayContext context;
 
 LEDProgram* program;
+
+TBlendType currentBlending;
 
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
@@ -208,52 +201,3 @@ void ToggleBlending() {
     currentBlending = LINEARBLEND;
   }
 }
-
-// This example shows how to set up a static color palette
-// which is stored in PROGMEM (flash), which is almost always more
-// plentiful than RAM.  A static PROGMEM palette like this
-// takes up 64 bytes of flash.
-const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM = {
-  CRGB::Red,
-  CRGB::Gray,  // 'white' is too bright compared to red and blue
-  CRGB::Blue,
-  CRGB::Black,
-
-  CRGB::Red,
-  CRGB::Gray,
-  CRGB::Blue,
-  CRGB::Black,
-
-  CRGB::Red,
-  CRGB::Red,
-  CRGB::Gray,
-  CRGB::Gray,
-  CRGB::Blue,
-  CRGB::Blue,
-  CRGB::Black,
-  CRGB::Black
-};
-
-
-
-// Additionl notes on FastLED compact palettes:
-//
-// Normally, in computer graphics, the palette (or "color lookup table")
-// has 256 entries, each containing a specific 24-bit RGB color.  You can then
-// index into the color palette using a simple 8-bit (one byte) value.
-// A 256-entry color palette takes up 768 bytes of RAM, which on Arduino
-// is quite possibly "too many" bytes.
-//
-// FastLED does offer traditional 256-element palettes, for setups that
-// can afford the 768-byte cost in RAM.
-//
-// However, FastLED also offers a compact alternative.  FastLED offers
-// palettes that store 16 distinct entries, but can be accessed AS IF
-// they actually have 256 entries; this is accomplished by interpolating
-// between the 16 explicit entries to create fifteen intermediate palette
-// entries between each pair.
-//
-// So for example, if you set the first two explicit entries of a compact
-// palette to Green (0,255,0) and Blue (0,0,255), and then retrieved
-// the first sixteen entries from the virtual palette (of 256), you'd get
-// Green, followed by a smooth gradient from green-to-blue, and then Blue.
