@@ -3,7 +3,6 @@
 #include "config.hpp"
 
 PaletteProgram::PaletteProgram(CRGBPalette16 p) {
-  blending = LINEARBLEND;
   palette = p;
 };
 
@@ -16,7 +15,7 @@ void PaletteProgram::update(const PlayContext& context, CRGB leds[]) {
       palette, 
       colorIndex, 
       brightness, 
-      blending);
+      context.blending);
     colorIndex += 3;
   }
 

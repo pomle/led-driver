@@ -95,8 +95,6 @@ PlayContext context;
 
 LEDProgram* program;
 
-TBlendType currentBlending;
-
 void setup() {
   pinMode(PLAY_BUTTON, INPUT);
   pinMode(COLOR_BUTTON, INPUT);
@@ -110,8 +108,6 @@ void setup() {
   Serial.begin(9600);
 
   program = programs[programIndex];
-
-  currentBlending = LINEARBLEND;
 }
 
 void loop() {
@@ -195,9 +191,9 @@ void ToggleProgram() {
 }
 
 void ToggleBlending() {
-  if (currentBlending == LINEARBLEND) {
-    currentBlending = NOBLEND;
+  if (context.blending == LINEARBLEND) {
+    context.blending = NOBLEND;
   } else {
-    currentBlending = LINEARBLEND;
+    context.blending = LINEARBLEND;
   }
 }
